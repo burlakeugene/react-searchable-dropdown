@@ -1,38 +1,15 @@
-## Burlak React Modal
+## React searchable dropdown
 
 ```
-npm i --save burlak-react-modal
+npm i --save react-searchable-dropdown
 ```
 
 ```
-import Modal from 'burlak-react-modal';
-<Modal
-	dark
-	title={'Hi!'}
-	className={'my-modal'}
-	opened={this.state.bool}
-	maxWidth={400}
-	beforeHide={(instance) => {}}
-	onShow={(instance) => {}}
-	onHide={(instance) => {
-		this.setState({
-			bool: false
-		});
+import Searchable from 'react-searchable-dropdown';
+<Searchable
+	options={['cSecond', 'ASecond', 'bSecond', 'ASzo']}
+	onSelect={(value) => {
+		console.log(value);
 	}}
-	buttons={[{
-		text: 'Cancel',
-		type: 'error',
-		onClick: (e, instance) => {
-			console.log(e, instance);
-		}
-	},{
-		text: 'Send',
-		type: 'success',
-		onClick: (e, instance) => {
-			console.log(e, instance);
-		}
-	}]}
->
-	Test modal
-</Modal>
+/>
 ```
