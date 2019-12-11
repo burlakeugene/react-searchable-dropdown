@@ -1,4 +1,5 @@
 {
+  "publicPath": "/",
   "connection": {
     "REST": {
       "protocol":"http",
