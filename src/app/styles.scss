@@ -1,0 +1,23 @@
+.wrap{
+  &-inner{
+    &-1{
+      background-color: red;
+      span{
+        position: relative;
+        display: block;
+        &:after{
+          content: '';
+          display: block;
+          position: absolute;
+          top: 100%;
+          width: 10px;
+          height: 30px;
+          background-color: blue;
+        }
+      }
+    }
+    &-2{
+      background-color: #fff;
+    }
+  }
+}
