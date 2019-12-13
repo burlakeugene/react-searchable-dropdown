@@ -6,11 +6,13 @@ class Searchable extends Component {
     super(props);
     this.state = {
       value: props.value || '',
+      selected: props.value || '',
       options: props.options || [],
       optionsVisible: [],
       placeholder: props.placeholder || 'Search',
       notFoundText: props.notFoundText || 'No result found',
-      focused: false
+      focused: false,
+      arrowPosition: -1
     };
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
@@ -18,8 +20,6 @@ class Searchable extends Component {
     this.select = this.select.bind(this);
     this.keyDown = this.keyDown.bind(this);
   }
-
-  setValue(value) {}
 
   componentDidMount() {
     document.addEventListener('click', this.onBlur);
@@ -37,51 +37,109 @@ class Searchable extends Component {
     };
   }
 
-  findAssumption() {
-    let { optionsVisible, value } = this.state,
-      assume = optionsVisible.find(item => {
+  sort() {
+    let { value, optionsVisible } = this.state,
+      firsts = [],
+      seconds = [];
+    if (value) {
+      optionsVisible = optionsVisible.sort((a, b) => {
+        return a.toLowerCase().localeCompare(b.toLowerCase());
+      });
+      seconds = optionsVisible.filter(item => {
         return item.toLowerCase().indexOf(value.toLowerCase()) === 0;
       });
-    if (!assume) return;
+      firsts = seconds.filter(item => {
+        return item.indexOf(value) === 0;
+      });
+      seconds = seconds.filter(item => {
+        return item.indexOf(value) !== 0;
+      });
+      optionsVisible = optionsVisible.filter(item => {
+        return item.toLowerCase().indexOf(value.toLowerCase()) !== 0;
+      });
+      optionsVisible = [...firsts, ...seconds, ...optionsVisible];
+    }
     this.setState({
-      assume: value ? assume : false
+      optionsVisible
     });
   }
 
-  onChange(e) {
-    let value = e.target.value,
-      optionsVisible = [],
-      match = false,
-      { options } = this.state;
-    optionsVisible = options.filter(item => {
-      if (!match)
-        match = item.toLowerCase() === value.toLowerCase() ? item : false;
-      return item.toLowerCase().indexOf(value.toLowerCase()) >= 0;
+  findAssumption() {
+    let { optionsVisible, value } = this.state,
+      assume = optionsVisible.find(item => {
+        return item.indexOf(value) === 0;
+      }),
+      assumeLower = optionsVisible.find(item => {
+        return item.toLowerCase().indexOf(value.toLowerCase()) === 0;
+      });
+    if (!assume && !assumeLower) return;
+    this.setState({
+      assume: value ? (assume ? assume : assumeLower) : false
     });
-    this.props.onSelect && match && this.props.onSelect(match);
+  }
+
+  buildList(value) {
+    let { options } = this.state,
+      optionsVisible = options.filter(item => {
+        return item.toLowerCase().indexOf(value.toLowerCase()) >= 0;
+      });
     this.setState(
       {
-        optionsVisible: value ? optionsVisible.sort() : optionsVisible,
-        value: match ? match : value,
-        focused: match ? false : true,
-        assume: false
+        value,
+        optionsVisible,
+        focused: true,
+        assume: false,
+        arrowPosition: -1
       },
       () => {
+        this.sort();
         this.findAssumption();
       }
     );
   }
 
+  onChange(e) {
+    let value = e.target.value;
+    if (!this.select(value)) this.buildList(value);
+  }
+
   keyDown(e) {
-    let { assume } = this.state;
-    if (e.keyCode == 9 && assume) {
+    let { assume = '', arrowPosition, optionsVisible, value } = this.state;
+
+    if ((e.keyCode == 9 || e.keyCode == 13) && assume) {
       e.preventDefault();
-      this.props.onSelect && this.props.onSelect(assume);
+      this.select(assume);
+    }
+
+    if (e.keyCode == 40) {
+      e.preventDefault();
+      if (arrowPosition < optionsVisible.length - 1) {
+        arrowPosition++;
+      } else {
+        arrowPosition = 0;
+      }
+      let assume = optionsVisible[arrowPosition];
+      value = assume.slice(0, value.length);
       this.setState({
-        optionsVisible: [],
-        value: assume,
-        focused: false,
-        assume: false
+        value,
+        arrowPosition,
+        assume
+      });
+    }
+
+    if (e.keyCode == 38) {
+      e.preventDefault();
+      if (arrowPosition <= 0) {
+        arrowPosition = optionsVisible.length - 1;
+      } else {
+        arrowPosition--;
+      }
+      let assume = optionsVisible[arrowPosition];
+      value = assume.slice(0, value.length);
+      this.setState({
+        value,
+        arrowPosition,
+        assume
       });
     }
   }
@@ -106,21 +164,38 @@ class Searchable extends Component {
       focused: false,
       optionsVisible: [],
       value: match ? match : '',
-      assume: false
+      assume: false,
+      arrowPosition: -1
     });
   }
 
   select(value) {
+    let { options, selected } = this.state,
+      newSelected =
+        options.find(item => {
+          return item === value;
+        }) || '',
+      newSelectedLower =
+        options.find(item => {
+          return item.toLowerCase() === value.toLowerCase();
+        }) || '';
+    newSelected = newSelected ? newSelected : newSelectedLower;
     this.setState(
       {
-        value,
+        selected: newSelected,
+        value: newSelected ? newSelected : value,
         optionsVisible: [],
-        focused: false
+        focused: false,
+        arrowPosition: -1,
+        assume: false
       },
       () => {
-        this.props.onSelect && this.props.onSelect(value);
+        selected !== newSelected &&
+          this.props.onSelect &&
+          this.props.onSelect(newSelected);
       }
     );
+    return newSelected;
   }
 
   render() {
@@ -130,7 +205,9 @@ class Searchable extends Component {
       focused,
       placeholder,
       notFoundText,
-      assume
+      assume,
+      arrowPosition,
+      selected
     } = this.state;
     return (
       <div
@@ -151,7 +228,7 @@ class Searchable extends Component {
             type="text"
             onChange={this.onChange}
             value={value}
-            placeholder={placeholder}
+            placeholder={!assume ? placeholder : ''}
             onKeyDown={this.keyDown}
             ref={node => (this.input = node)}
           />
@@ -160,8 +237,10 @@ class Searchable extends Component {
               {assume.split('').map((char, index) => {
                 return (
                   <span
+                    key={char + index}
                     className={[
                       'searchable-input-assume-char',
+                      char === char.toUpperCase() ? 'searchable-input-assume-char__upper' : 'searchable-input-assume-char__lower',
                       index <= value.length - 1
                         ? 'searchable-input-assume-char__hidden'
                         : ''
@@ -204,7 +283,10 @@ class Searchable extends Component {
                 <div
                   className={[
                     'searchable-list-item',
-                    item === value ? 'searchable-list-item__active' : ''
+                    item === selected ? 'searchable-list-item__active' : '',
+                    arrowPosition >= 0 && index === arrowPosition
+                      ? 'searchable-list-item__arrow-position'
+                      : ''
                   ].join(' ')}
                   key={index}
                   onClick={e => {
@@ -212,6 +294,17 @@ class Searchable extends Component {
                     this.select(item);
                   }}
                 >
+                  {arrowPosition >= 0 && index === arrowPosition && (
+                    <i className="searchable-list-item-arrow">
+                      <svg viewBox="0 0 240.823 240.823">
+                        <path
+                          d="M183.189,111.816L74.892,3.555c-4.752-4.74-12.451-4.74-17.215,0c-4.752,4.74-4.752,12.439,0,17.179
+		l99.707,99.671l-99.695,99.671c-4.752,4.74-4.752,12.439,0,17.191c4.752,4.74,12.463,4.74,17.215,0l108.297-108.261
+		C187.881,124.315,187.881,116.495,183.189,111.816z"
+                        />
+                      </svg>
+                    </i>
+                  )}
                   {item}
                 </div>
               );

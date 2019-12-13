@@ -23,6 +23,9 @@
         &__hidden {
           color: transparent;
         }
+        &__upper{
+          letter-spacing: -0.6px;
+        }
       }
     }
     input {
@@ -88,14 +91,32 @@
       cursor: pointer;
       transition: all 0.3s;
       background-color: #181b2b;
+      position: relative;
       &:nth-child(even) {
         background-color: #1a1e30;
+      }
+      &-arrow{
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 5px;
+        width: 10px;
+        height: 10px;
+        font-size: 0;
+        svg{
+          width: 100%;
+          height: auto;
+          fill: #fff;
+        }
       }
     }
     .searchable-list-item {
       &:hover,
       &__active {
         background-color: #252d47;
+      }
+      &__arrow-position{
+        padding-left: 20px;
       }
     }
   }
