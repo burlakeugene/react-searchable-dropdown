@@ -10,7 +10,7 @@ class App extends Component {
     return (
       <div className="wrap">
         <Searchable
-          options={['USDCAD', 'CADUSD', 'USDEUR']}
+          options={['USDCAD', 'CADUSD', 'USDEUR', 'SD', 'GF', 'SDSA']}
           onSelect={(value) => {
             console.log(value);
           }}

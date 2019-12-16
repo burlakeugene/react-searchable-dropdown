@@ -120,11 +120,14 @@ class Searchable extends Component {
       }
       let assume = optionsVisible[arrowPosition];
       value = assume.slice(0, value.length);
-      this.setState({
-        value,
-        arrowPosition,
-        assume
-      });
+      this.setState(
+        {
+          value,
+          arrowPosition,
+          assume
+        },
+        this.scrollList
+      );
     }
 
     if (e.keyCode == 38) {
@@ -136,11 +139,24 @@ class Searchable extends Component {
       }
       let assume = optionsVisible[arrowPosition];
       value = assume.slice(0, value.length);
-      this.setState({
-        value,
-        arrowPosition,
-        assume
-      });
+      this.setState(
+        {
+          value,
+          arrowPosition,
+          assume
+        },
+        this.scrollList
+      );
+    }
+  }
+
+  scrollList() {
+    let { list } = this,
+      { arrowPosition } = this.state,
+      target = '.searchable-list-item__' + arrowPosition;
+    if (list) {
+      let item = list.querySelector(target);
+      item && item.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 
@@ -240,7 +256,9 @@ class Searchable extends Component {
                     key={char + index}
                     className={[
                       'searchable-input-assume-char',
-                      char === char.toUpperCase() ? 'searchable-input-assume-char__upper' : 'searchable-input-assume-char__lower',
+                      char === char.toUpperCase()
+                        ? 'searchable-input-assume-char__upper'
+                        : 'searchable-input-assume-char__lower',
                       index <= value.length - 1
                         ? 'searchable-input-assume-char__hidden'
                         : ''
@@ -272,6 +290,7 @@ class Searchable extends Component {
           </div>
         </div>
         <div
+          ref={node => (this.list = node)}
           className={[
             'searchable-list',
             focused ? 'searchable-list__visible' : ''
@@ -283,6 +302,7 @@ class Searchable extends Component {
                 <div
                   className={[
                     'searchable-list-item',
+                    'searchable-list-item__' + index,
                     item === selected ? 'searchable-list-item__active' : '',
                     arrowPosition >= 0 && index === arrowPosition
                       ? 'searchable-list-item__arrow-position'
