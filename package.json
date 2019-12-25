@@ -1,6 +1,6 @@
 {
   "name": "react-searchable-dropdown",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/burlakeugene/react-searchable-dropdown.git"
@@ -8,13 +8,13 @@
   "main": "package/bundle.js",
   "author": "Eugene Burlak <burlakeugene@gmail.com>",
   "license": "MIT",
-  "description": "Searchable dropdown with autocomplite",
+  "description": "Searchable dropdown with autocomplete",
   "keywords": [
     "input",
     "select",
     "dropdown",
     "search",
-    "autocomplite"
+    "autocomplete"
   ],
   "scripts": {
     "dev": "CONFIG_NAME='dev' webpack-dev-server --mode development --port 3001 --open --hot",
