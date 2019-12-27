@@ -23,6 +23,7 @@ class Searchable extends Component {
 
   componentDidMount() {
     document.addEventListener('click', this.onBlur);
+    this.onBlur();
   }
 
   componentWillUnmount() {
