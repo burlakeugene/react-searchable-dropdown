@@ -8,6 +8,12 @@ class Searchable extends Component {
       value: props.value || '',
       selected: props.value || '',
       options: props.options || [],
+      optionsValues: props.options.map(option => {
+        return option.value;
+      }),
+      optionsLabels: props.options.map(option => {
+        return option.label;
+      }),
       optionsVisible: [],
       placeholder: props.placeholder || 'Search',
       notFoundText: props.notFoundText || 'No result found',
@@ -33,6 +39,12 @@ class Searchable extends Component {
   static getDerivedStateFromProps(props, state) {
     return {
       options: props.options || [],
+      optionsValues: props.options.map(option => {
+        return option.value;
+      }),
+      optionsLabels: props.options.map(option => {
+        return option.label;
+      }),
       placeholder: props.placeholder || 'Search',
       notFoundText: props.notFoundText || 'No result found'
     };
@@ -80,8 +92,8 @@ class Searchable extends Component {
   }
 
   buildList(value) {
-    let { options } = this.state,
-      optionsVisible = options.filter(item => {
+    let { optionsLabels } = this.state,
+      optionsVisible = optionsLabels.filter(item => {
         return item.toLowerCase().indexOf(value.toLowerCase()) >= 0;
       });
     this.setState(
@@ -162,18 +174,18 @@ class Searchable extends Component {
   }
 
   onFocus() {
-    let { options, optionsVisible } = this.state;
+    let { optionsLabels, optionsVisible } = this.state;
     this.input && this.input.focus();
     this.setState({
       focused: true,
-      optionsVisible: optionsVisible.length ? optionsVisible : options
+      optionsVisible: optionsVisible.length ? optionsVisible : optionsLabels
     });
   }
 
   onBlur() {
-    let { value, options } = this.state,
+    let { value, optionsLabels } = this.state,
       match = false;
-    options.forEach(item => {
+    optionsLabels.forEach(item => {
       if (!match)
         match = item.toLowerCase() === value.toLowerCase() ? item : false;
     });
@@ -187,13 +199,13 @@ class Searchable extends Component {
   }
 
   select(value) {
-    let { options, selected } = this.state,
+    let { optionsLabels, optionsValues, options, selected } = this.state,
       newSelected =
-        options.find(item => {
+        optionsLabels.find(item => {
           return item === value;
         }) || '',
       newSelectedLower =
-        options.find(item => {
+        optionsLabels.find(item => {
           return item.toLowerCase() === value.toLowerCase();
         }) || '';
     newSelected = newSelected ? newSelected : newSelectedLower;
@@ -209,7 +221,11 @@ class Searchable extends Component {
       () => {
         selected !== newSelected &&
           this.props.onSelect &&
-          this.props.onSelect(newSelected);
+          this.props.onSelect(
+            options.find(item => {
+              return item.label === newSelected;
+            })
+          );
       }
     );
     return newSelected;

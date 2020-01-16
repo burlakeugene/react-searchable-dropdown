@@ -18,12 +18,12 @@
       top: 50%;
       font-size: 14px;
       transform: translateY(-50%);
-      z-index: 1;
+      z-index: 3;
       &-char {
         &__hidden {
           color: transparent;
         }
-        &__upper{
+        &__upper {
           letter-spacing: -0.6px;
         }
       }
@@ -38,7 +38,7 @@
       width: 100%;
       color: #fff;
       position: relative;
-      z-index: 2;
+      z-index: 3;
       &:focus {
         outline: none;
       }
@@ -95,7 +95,7 @@
       &:nth-child(even) {
         background-color: #1a1e30;
       }
-      &-arrow{
+      &-arrow {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -103,7 +103,7 @@
         width: 10px;
         height: 10px;
         font-size: 0;
-        svg{
+        svg {
           width: 100%;
           height: auto;
           fill: #fff;
@@ -115,7 +115,7 @@
       &__active {
         background-color: #252d47;
       }
-      &__arrow-position{
+      &__arrow-position {
         padding-left: 20px;
       }
     }
