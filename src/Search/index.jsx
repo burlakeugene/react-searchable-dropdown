@@ -18,7 +18,8 @@ class Searchable extends Component {
       placeholder: props.placeholder || 'Search',
       notFoundText: props.notFoundText || 'No result found',
       focused: false,
-      arrowPosition: -1
+      arrowPosition: -1,
+      noInput: props.noInput || false
     };
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
@@ -240,7 +241,8 @@ class Searchable extends Component {
       notFoundText,
       assume,
       arrowPosition,
-      selected
+      selected,
+      noInput
     } = this.state;
     return (
       <div
@@ -248,7 +250,12 @@ class Searchable extends Component {
         onClick={e => {
           e.stopPropagation();
           e.nativeEvent.stopImmediatePropagation();
-          this.onFocus();
+          let action = !noInput
+            ? this.onFocus
+            : focused
+            ? this.onBlur
+            : this.onFocus;
+          action();
         }}
       >
         <div
@@ -264,6 +271,7 @@ class Searchable extends Component {
             placeholder={!assume ? placeholder : ''}
             onKeyDown={this.keyDown}
             ref={node => (this.input = node)}
+            readOnly={noInput}
           />
           {assume && (
             <span className="searchable-input-assume">

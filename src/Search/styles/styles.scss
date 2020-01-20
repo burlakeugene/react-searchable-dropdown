@@ -39,6 +39,9 @@
       color: #fff;
       position: relative;
       z-index: 3;
+      &:read-only {
+        cursor: pointer;
+      }
       &:focus {
         outline: none;
       }
