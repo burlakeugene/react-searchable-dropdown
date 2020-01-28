@@ -30,7 +30,19 @@ class Searchable extends Component {
 
   componentDidMount() {
     document.addEventListener('click', this.onBlur);
-    this.onBlur();
+    this.findInitialValue();
+  }
+
+  findInitialValue() {
+    let { value, options } = this.state,
+      match = false;
+    options.forEach(item => {
+      if (!match) match = item.value === value ? item : false;
+    });
+    this.setState({
+      value: match ? match.label : '',
+      selected: match ? match.label : ''
+    });
   }
 
   componentWillUnmount() {
@@ -225,7 +237,7 @@ class Searchable extends Component {
           this.props.onSelect(
             options.find(item => {
               return item.label === newSelected;
-            })
+            }) || false
           );
       }
     );
