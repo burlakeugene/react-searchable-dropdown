@@ -12,8 +12,8 @@ class App extends Component {
         <Searchable
           value={''}
           options={[{value: '', label: 'All'}, {value: 'popular', label: 'Popular'}]}
-          onSelect={(value) => {
-            console.log(value);
+          onSelect={(option) => {
+            console.log(option);
           }}
         />
       </div>

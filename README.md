@@ -17,8 +17,8 @@ import Searchable from 'react-searchable-dropdown';
         value: 'popular',
         label: 'Popular
     }]}
-    onSelect={value => {
-        console.log(value);
+    onSelect={option => {
+        console.log(option); // as example - {value: '', label: 'All'}
     }}
 />
 ```

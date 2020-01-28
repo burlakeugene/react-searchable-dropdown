@@ -4,9 +4,10 @@ import './styles/styles.scss';
 class Searchable extends Component {
   constructor(props) {
     super(props);
+    let value = props.value === '' || props.value ? props.value : false;
     this.state = {
-      value: props.value || '',
-      selected: props.value || '',
+      value,
+      selected: value,
       options: props.options || [],
       optionsValues: props.options.map(option => {
         return option.value;
@@ -19,7 +20,8 @@ class Searchable extends Component {
       notFoundText: props.notFoundText || 'No result found',
       focused: false,
       arrowPosition: -1,
-      noInput: props.noInput || false
+      noInput: props.noInput || false,
+      arrow: props.arrow || false
     };
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
@@ -59,7 +61,8 @@ class Searchable extends Component {
         return option.label;
       }),
       placeholder: props.placeholder || 'Search',
-      notFoundText: props.notFoundText || 'No result found'
+      notFoundText: props.notFoundText || 'No result found',
+      arrow: props.arrow || false
     };
   }
 
@@ -254,7 +257,8 @@ class Searchable extends Component {
       assume,
       arrowPosition,
       selected,
-      noInput
+      noInput,
+      arrow
     } = this.state;
     return (
       <div
@@ -317,13 +321,17 @@ class Searchable extends Component {
               }
             }}
           >
-            <svg viewBox="0 0 330 330">
-              <path
-                d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
-	c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
-	s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
-              />
-            </svg>
+            {arrow ? (
+              arrow
+            ) : (
+              <svg viewBox="0 0 330 330">
+                <path
+                  d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
+c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
+s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"
+                />
+              </svg>
+            )}
           </div>
         </div>
         <div
