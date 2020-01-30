@@ -20,5 +20,6 @@ import Searchable from 'react-searchable-dropdown';
     onSelect={option => {
         console.log(option); // as example - {value: '', label: 'All'}
     }}
+    listMaxHeight={200} //by default 140
 />
 ```

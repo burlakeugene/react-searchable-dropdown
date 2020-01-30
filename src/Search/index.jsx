@@ -21,7 +21,8 @@ class Searchable extends Component {
       focused: false,
       arrowPosition: -1,
       noInput: props.noInput || false,
-      arrow: props.arrow || false
+      arrow: props.arrow || false,
+      listMaxHeight: props.listMaxHeight || 140
     };
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
@@ -258,7 +259,8 @@ class Searchable extends Component {
       arrowPosition,
       selected,
       noInput,
-      arrow
+      arrow,
+      listMaxHeight
     } = this.state;
     return (
       <div
@@ -340,6 +342,9 @@ s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.3
             'searchable-list',
             focused ? 'searchable-list__visible' : ''
           ].join(' ')}
+          style={{
+            maxHeight: listMaxHeight
+          }}
         >
           {optionsVisible.length ? (
             optionsVisible.map((item, index) => {
