@@ -7,14 +7,14 @@
   }
   &-input {
     position: relative;
-    background-color: #1a1e30;
+    background-color: #252d47;
     border-radius: 5px;
-    transition: all 0.3s;
     padding-right: 34px;
+    border-bottom: 1px solid transparent;
     &-assume {
-      color: gray;
+      color: #aab7e1;
       position: absolute;
-      left: 10px;
+      left: 14px;
       top: 50%;
       font-size: 14px;
       transform: translateY(-50%);
@@ -34,7 +34,7 @@
       box-shadow: none;
       font-size: 14px;
       line-height: 1em;
-      padding: 10px;
+      padding: 14px;
       width: 100%;
       color: #fff;
       position: relative;
@@ -44,6 +44,9 @@
       }
       &:focus {
         outline: none;
+      }
+      &::placeholder {
+        color: #aab7e1;
       }
     }
     &-arrow {
@@ -64,6 +67,7 @@
         transform: translateY(-50%) rotate(-180deg);
       }
       border-radius: 5px 5px 0 0;
+      border-bottom: 1px solid #6f7dab;
     }
   }
   &-list {
@@ -73,7 +77,8 @@
     width: 100%;
     max-height: 140px;
     overflow: auto;
-    background-color: #1a1e30;
+    background-color: #252d47;
+    padding: 10px 0;
     display: none;
     z-index: 2;
     border-radius: 0 0 5px 5px;
@@ -88,16 +93,12 @@
       line-height: 1em;
     }
     &-item {
-      color: #fff;
-      padding: 10px;
+      color: #aab7e1;
+      padding: 10px 14px;
       line-height: 1em;
       cursor: pointer;
       transition: all 0.3s;
-      background-color: #181b2b;
       position: relative;
-      &:nth-child(even) {
-        background-color: #1a1e30;
-      }
       &-arrow {
         position: absolute;
         top: 50%;
@@ -114,13 +115,26 @@
       }
     }
     .searchable-list-item {
-      &:hover,
+      &:hover {
+        color: #fff;
+        background-color: #1a1e30;
+      }
       &__active {
-        background-color: #252d47;
+        color: #fff;
       }
       &__arrow-position {
         padding-left: 20px;
       }
     }
   }
+}
+
+.searchable-list,
+.searchable-input{
+  transition: box-shadow 0.3s;
+}
+
+.searchable-list__visible,
+.searchable-input__active {
+  box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.5);
 }
