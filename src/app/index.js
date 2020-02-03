@@ -11,8 +11,12 @@ class App extends Component {
       <div className="wrap">
         <Searchable
           value={''}
-          options={[{value: '', label: 'All'}, {value: 'popular', label: 'Popular'}]}
-          onSelect={(option) => {
+          options={[
+            { value: '', label: 'All' },
+            { value: 'popular', label: 'Popular' },
+            { value: 'favorites', label: 'Favorites' }
+          ]}
+          onSelect={option => {
             console.log(option);
           }}
         />
