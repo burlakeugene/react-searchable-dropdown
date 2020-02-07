@@ -39,6 +39,9 @@
       color: #fff;
       position: relative;
       z-index: 3;
+      &::-ms-clear {
+        display: none;
+      }
       &:read-only {
         cursor: pointer;
       }
@@ -127,10 +130,10 @@
     }
   }
   &-list,
-  &-input{
+  &-input {
     transition: box-shadow 0.3s;
     &__visible,
-    &__active{
+    &__active {
       box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.5);
     }
   }
