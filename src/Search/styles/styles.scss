@@ -1,6 +1,10 @@
 .searchable {
   position: relative;
   font-family: arial;
+  z-index: 1;
+  &__active{
+    z-index: 2;
+  }
   &,
   & * {
     box-sizing: border-box;
@@ -11,22 +15,6 @@
     border-radius: 5px;
     padding-right: 34px;
     border-bottom: 1px solid transparent;
-    &-assume {
-      color: #aab7e1;
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      font-size: 14px;
-      transform: translateY(-50%);
-      &-char {
-        &__hidden {
-          color: transparent;
-        }
-        &__upper {
-          letter-spacing: -0.6px;
-        }
-      }
-    }
     input {
       background-color: transparent;
       border: none;
@@ -52,12 +40,28 @@
     }
     &-arrow {
       position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      right: 10px;
-      width: 16px;
-      height: 16px;
-      transition: all 0.3s;
+      top: 0;
+      right: 0;
+      width: 34px;
+      height: 100%;
+      &-inner {
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 0.3s;
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0;
+        cursor: pointer;
+        &:focus {
+          outline: none;
+        }
+      }
       cursor: pointer;
       svg {
         fill: #ffffff;
@@ -65,10 +69,30 @@
     }
     &__active {
       .searchable-input-arrow {
-        transform: translateY(-50%) rotate(-180deg);
+        &-inner {
+          transform: translate(-50%, -50%) rotate(-180deg);
+        }
       }
       border-radius: 5px 5px 0 0;
       border-bottom: 1px solid #6f7dab;
+    }
+    &-control {
+      &-assume {
+        color: #aab7e1;
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        font-size: 14px;
+        transform: translateY(-50%);
+        &-char {
+          &__hidden {
+            color: transparent;
+          }
+          &__upper {
+            letter-spacing: -0.6px;
+          }
+        }
+      }
     }
   }
   &-list {
@@ -112,8 +136,6 @@
           fill: #fff;
         }
       }
-    }
-    .searchable-list-item {
       &:hover {
         color: #fff;
         background-color: #1a1e30;

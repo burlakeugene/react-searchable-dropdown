@@ -1,23 +1,21 @@
+*{
+  box-sizing: border-box;
+}
+body,html{
+  height: 100%;
+  margin: 0;
+}
 .wrap{
-  &-inner{
-    &-1{
-      background-color: red;
-      span{
-        position: relative;
-        display: block;
-        &:after{
-          content: '';
-          display: block;
-          position: absolute;
-          top: 100%;
-          width: 10px;
-          height: 30px;
-          background-color: blue;
-        }
-      }
+  font-size: 0;
+  &-col{
+    display: inline-block;
+    padding: 20px;
+    width: 50%;
+    &:nth-child(even){
+      padding-left: 10px;
     }
-    &-2{
-      background-color: #fff;
+    &:nth-child(odd){
+      padding-right: 10px;
     }
   }
 }

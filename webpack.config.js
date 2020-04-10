@@ -18,7 +18,7 @@ const isDevelopment = process.env.WEBPACK_DEV_SERVER === "true";
 const buildType = process.env.BUILD_TYPE || 'app';
 
 module.exports = {
-  entry: buildType === 'package' ? './src/package/index.js' : './src/app/index.js',
+  entry: buildType === 'package' ? './src/package/index.js' : './src/app/index.jsx',
   output: {
     path: path.join(ROOT_DIR, buildType === 'package' ? '/package' : '/docs'),
     publicPath: JSON_CONFIG.publicPath,
