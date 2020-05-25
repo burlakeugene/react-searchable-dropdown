@@ -24,6 +24,7 @@ class Searchable extends Component {
       arrow: props.arrow || false,
       listMaxHeight: props.listMaxHeight || 140,
       multiple: props.multiple || false,
+      disabled: props.disabled || false
     };
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
@@ -79,6 +80,8 @@ class Searchable extends Component {
       }),
       placeholder: props.placeholder || 'Search',
       notFoundText: props.notFoundText || 'No result found',
+      disabled: props.disabled || false,
+      focused: props.disabled && state.focused ? false : state.focused,
       arrow: props.arrow || false,
     };
   }
@@ -278,12 +281,15 @@ class Searchable extends Component {
       arrow,
       listMaxHeight,
       multiple,
+      disabled,
     } = this.state;
     return (
       <div
-        className={['searchable', focused ? 'searchable__active' : ''].join(
-          ' '
-        )}
+        className={[
+          'searchable',
+          focused ? 'searchable__active' : '',
+          disabled ? 'searchable__disabled' : '',
+        ].join(' ')}
         ref={(node) => (this.root = node)}
       >
         <div
@@ -311,6 +317,7 @@ class Searchable extends Component {
               onKeyDown={this.keyDown}
               ref={(node) => (this.input = node)}
               readOnly={noInput}
+              disabled={disabled}
             />
             {assume && (
               <span className="searchable-input-control-assume">

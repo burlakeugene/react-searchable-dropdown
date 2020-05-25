@@ -2,6 +2,12 @@
   position: relative;
   font-family: arial;
   z-index: 1;
+  &__disabled{
+    opacity: 0.8;
+    &, & *, .searchable-input-arrow{
+      cursor: not-allowed;
+    }
+  }
   &__active{
     z-index: 2;
   }

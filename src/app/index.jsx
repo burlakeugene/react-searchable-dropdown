@@ -12,6 +12,7 @@ class App extends Component {
         <div className="wrap-col">
           <Searchable
             value={''}
+            disabled={true}
             options={[
               { value: '', label: 'All' },
               { value: 'popular', label: 'Popular' },
