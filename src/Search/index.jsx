@@ -4,7 +4,10 @@ import './styles/styles.scss';
 class Searchable extends Component {
   constructor(props) {
     super(props);
-    let value = props.value === '' || props.value ? props.value : false;
+    let value =
+      props.value === '' || props.value === 0 || props.value
+        ? props.value
+        : false;
     this.state = {
       value,
       selected: value,
@@ -24,7 +27,7 @@ class Searchable extends Component {
       arrow: props.arrow || false,
       listMaxHeight: props.listMaxHeight || 140,
       multiple: props.multiple || false,
-      disabled: props.disabled || false
+      disabled: props.disabled || false,
     };
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
