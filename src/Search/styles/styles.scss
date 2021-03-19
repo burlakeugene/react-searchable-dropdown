@@ -2,20 +2,20 @@
   position: relative;
   font-family: arial;
   z-index: 1;
-  &__disabled{
+  &--disabled{
     opacity: 0.8;
     &, & *, .searchable-input-arrow{
       cursor: not-allowed;
     }
   }
-  &__active{
+  &--active{
     z-index: 2;
   }
   &,
   & * {
     box-sizing: border-box;
   }
-  &-input {
+  &__controls {
     position: relative;
     background-color: #252d47;
     border-radius: 5px;

@@ -6,11 +6,11 @@ body,html{
   margin: 0;
 }
 .wrap{
-  font-size: 0;
+  display: flex;
+  flex-wrap: nowrap;
   &-col{
-    display: inline-block;
     padding: 20px;
-    width: 50%;
+    flex: 0 0 50%;
     &:nth-child(even){
       padding-left: 10px;
     }
