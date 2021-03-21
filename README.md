@@ -7,9 +7,11 @@ npm i --save react-searchable-dropdown
 ```
 import Searchable from 'react-searchable-dropdown';
 <Searchable
-    value="" //if value is not item of options array, it would be ignored on mount
+    value=""
     placeholder="Search" // by default "Search"
     notFoundText="No result found" // by default "No result found"
+    multiple
+    noInput
     options={[{
         value: '',
         label: 'All'
@@ -17,9 +19,24 @@ import Searchable from 'react-searchable-dropdown';
         value: 'popular',
         label: 'Popular
     }]}
-    onSelect={option => {
-        console.log(option); // as example - {value: '', label: 'All'}
+    onSelect={value => {
+        console.log(value);
     }}
     listMaxHeight={200} //by default 140
+/>
+
+<Searchable
+    value={['popular']}
+    multiple
+    options={[{
+        value: '',
+        label: 'All'
+    }, {
+        value: 'popular',
+        label: 'Popular
+    }]}
+    onSelect={value => {
+        console.log(value);
+    }}
 />
 ```
