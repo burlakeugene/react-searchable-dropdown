@@ -10,7 +10,6 @@ import Searchable from 'react-searchable-dropdown';
     value=""
     placeholder="Search" // by default "Search"
     notFoundText="No result found" // by default "No result found"
-    multiple
     noInput
     options={[{
         value: '',
