@@ -2,14 +2,25 @@
   position: relative;
   font-family: arial;
   z-index: 1;
-  &--disabled{
+  &--disabled {
     opacity: 0.8;
-    &, & *, .searchable-input-arrow{
+    &,
+    & *,
+    .searchable__controls__arrow {
       cursor: not-allowed;
     }
   }
-  &--active{
+  &--active {
     z-index: 2;
+    .searchable__controls__arrow {
+      &__inner {
+        transform: translate(-50%, -50%) rotate(-180deg);
+      }
+    }
+    .searchable__controls {
+      border-radius: 5px 5px 0 0;
+      border-bottom: 1px solid #6f7dab;
+    }
   }
   &,
   & * {
@@ -21,6 +32,8 @@
     border-radius: 5px;
     padding-right: 34px;
     border-bottom: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
     input {
       background-color: transparent;
       border: none;
@@ -44,13 +57,13 @@
         color: #aab7e1;
       }
     }
-    &-arrow {
+    &__arrow {
       position: absolute;
       top: 0;
       right: 0;
       width: 34px;
       height: 100%;
-      &-inner {
+      &__inner {
         width: 16px;
         height: 16px;
         position: absolute;
@@ -73,35 +86,74 @@
         fill: #ffffff;
       }
     }
-    &__active {
-      .searchable-input-arrow {
-        &-inner {
-          transform: translate(-50%, -50%) rotate(-180deg);
+    &__placeholder{
+      color: #aab7e1;
+      padding: 14px;
+      font-size: 14px;
+    }
+    &__input {
+      position: relative;
+      &--hidden{
+        position: absolute;
+        width: 0;
+        height: 0;
+        *{
+          font-size: 0;
         }
       }
-      border-radius: 5px 5px 0 0;
-      border-bottom: 1px solid #6f7dab;
-    }
-    &-control {
-      &-assume {
+      &__assume {
         color: #aab7e1;
         position: absolute;
         left: 14px;
         top: 50%;
         font-size: 14px;
         transform: translateY(-50%);
-        &-char {
-          &__hidden {
+        &__char {
+          &--hidden {
             color: transparent;
           }
-          &__upper {
+          &--upper {
             letter-spacing: -0.6px;
           }
         }
       }
     }
+    &__list{
+      display: flex;
+      flex-wrap: wrap;
+      padding: 2.5px;
+      &:empty{
+        padding: 0;
+      }
+      &__item{
+        padding: 7px 5px 7px 10px;
+        color: #fff;
+        background-color: #6f7dab;
+        border-radius: 3px;
+        font-size: 14px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        margin: 2.5px;
+        cursor: default;
+        &__remove{
+          margin-left: 10px;
+          border: none;
+          background-color: transparent;
+          padding: 6px;
+          width: 20px;
+          height: 20px;
+          font-size: 0;
+          cursor: pointer;
+          svg{
+            fill: #fff;
+          }
+        }
+      }
+    }
   }
-  &-list {
+
+  &__list {
     position: absolute;
     top: 100%;
     left: 0;
@@ -109,26 +161,22 @@
     overflow: auto;
     background-color: #252d47;
     padding: 10px 0;
-    display: none;
     border-radius: 0 0 5px 5px;
     font-size: 14px;
-    &__visible {
-      display: block;
-    }
-    &-empty {
+    &--empty {
       color: #eee;
       text-align: center;
       padding: 10px;
       line-height: 1em;
     }
-    &-item {
+    &__item {
       color: #aab7e1;
       padding: 10px 14px;
       line-height: 1em;
       cursor: pointer;
       transition: all 0.3s;
       position: relative;
-      &-arrow {
+      &__arrow {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -146,19 +194,18 @@
         color: #fff;
         background-color: #1a1e30;
       }
-      &__active {
+      &--active {
         color: #fff;
       }
-      &__arrow-position {
+      &--arrow-position {
         padding-left: 20px;
       }
     }
   }
-  &-list,
-  &-input {
-    transition: box-shadow 0.3s;
-    &__visible,
-    &__active {
+  &--active{
+    .searchable__list,
+    .searchable__controls{
+      transition: box-shadow 0.3s;
       box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.5);
     }
   }

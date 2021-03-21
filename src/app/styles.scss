@@ -7,10 +7,11 @@ body,html{
 }
 .wrap{
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   &-col{
     padding: 20px;
     flex: 0 0 50%;
+    width: 50%;
     &:nth-child(even){
       padding-left: 10px;
     }

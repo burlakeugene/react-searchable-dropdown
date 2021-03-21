@@ -36,7 +36,7 @@ class Searchable extends Component {
         }
       })(),
       search = (() => {
-        if (!props.muliple) {
+        if (!props.multiple) {
           let option = props.options.find((option) => {
             return option.value === value;
           });
@@ -48,20 +48,24 @@ class Searchable extends Component {
     this.state = {
       value,
       options: props.options,
+      optionsVisible: [],
       search,
       assume: '',
       multiple: props.multiple,
       disabled: props.disabled || false,
       placeholder: props.placeholder || 'Search',
       notFoundText: props.notFoundText || 'No result found',
-      focused: false,
-      arrowPosition: -1,
       noInput: props.noInput || false,
+      opened: false,
       arrow: {
         position: -1,
       },
       listMaxHeight: props.listMaxHeight || 140,
     };
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.keyDown = this.keyDown.bind(this);
   }
 
   componentDidMount() {
@@ -77,7 +81,7 @@ class Searchable extends Component {
       };
 
     this.documentClick = (e) => {
-      if (this.state.focused) {
+      if (this.state.opened) {
         if (!findParent(e.target)) this.onBlur();
       }
     };
@@ -93,7 +97,6 @@ class Searchable extends Component {
       placeholder: props.placeholder || state.placeholder,
       notFoundText: props.notFoundText || state.notFoundText,
       disabled: props.disabled || false,
-      focused: props.disabled && state.focused ? false : state.focused,
     };
   }
 
@@ -106,44 +109,252 @@ class Searchable extends Component {
         }),
       },
       () => {
-        this.onChange();
+        this.onBlur();
+        this.afterChange();
       }
     );
   }
 
-  onChange() {
+  afterChange() {
     let { value } = this.state;
     this.props.onSelect && this.props.onSelect(value);
   }
 
   onBlur() {
-    let { value, options } = this.state;
-    this.setState({
-      focused: false,
+    let { value, options, arrow, multiple } = this.state;
+    arrow.position = -1;
+    let obj = {
+      optionsVisible: [],
       assume: false,
-      arrowPosition: -1,
+      opened: false,
+      arrow,
+      search: '',
+    };
+    if (!multiple) {
+      let option = options.find((option) => {
+        return option.value === value;
+      });
+      obj.search = option ? option.label : '';
+    }
+    this.setState(obj);
+  }
+
+  onFocus() {
+    let { optionsVisible, options, disabled, multiple, value } = this.state;
+    if (disabled) return;
+    this.input && this.input.focus();
+    let nextOptions = optionsVisible.length ? optionsVisible : options;
+    this.setState({
+      opened: true,
+      optionsVisible: nextOptions,
+    });
+  }
+
+  select(option) {
+    let { value, multiple } = this.state,
+      changed = false;
+    if (!multiple) {
+      if (value !== option.value) changed = true;
+      value = option.value;
+    } else {
+      if (value.indexOf(option.value) < 0) {
+        value.push(option.value);
+        changed = true;
+      }
+    }
+    this.setState(
+      {
+        value,
+      },
+      () => {
+        this.onBlur();
+        if (changed) {
+          this.afterChange();
+        }
+      }
+    );
+  }
+
+  keyDown(e) {
+    let { assume = '', arrow, search, optionsVisible } = this.state;
+
+    if ((e.keyCode == 9 || e.keyCode == 13) && assume) {
+      e.preventDefault();
+      this.select(assume);
+    }
+
+    if (e.keyCode == 40) {
+      e.preventDefault();
+      if (arrow.position < optionsVisible.length - 1) {
+        arrow.position++;
+      } else {
+        arrow.position = 0;
+      }
+      let assume = optionsVisible[arrow.position];
+      search = assume.label.slice(0, search.length);
+      this.setState(
+        {
+          search,
+          arrow,
+          assume,
+        },
+        this.scrollList
+      );
+    }
+
+    if (e.keyCode == 38) {
+      e.preventDefault();
+      if (arrow.position <= 0) {
+        arrow.position = optionsVisible.length - 1;
+      } else {
+        arrow.position--;
+      }
+      let assume = optionsVisible[arrow.position];
+      search = assume.label.slice(0, search.length);
+      this.setState(
+        {
+          search,
+          arrow,
+          assume,
+        },
+        this.scrollList
+      );
+    }
+  }
+
+  onChange(event) {
+    let { arrow, options, opened } = this.state,
+      { target } = event,
+      { value } = target;
+    arrow.position = -1;
+    this.setState(
+      {
+        search: value,
+        arrow,
+        opened: true,
+      },
+      () => {
+        let match = options.find((option) => {
+          return option.label.toLowerCase() === value.toLowerCase();
+        });
+        if (match) {
+          this.select(match);
+        } else {
+          this.sort();
+        }
+      }
+    );
+  }
+
+  scrollList() {
+    let { list } = this,
+      { arrow } = this.state,
+      target = '.searchable__list__item--' + arrow.position;
+    if (list) {
+      let item = list.querySelector(target);
+      item && item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  sort() {
+    let { search, options } = this.state,
+      firsts = [],
+      seconds = [],
+      optionsVisible = [];
+    optionsVisible = options.filter((item) => {
+      return item.label.toLowerCase().indexOf(search.toLowerCase()) >= 0;
+    });
+    if (search) {
+      optionsVisible = optionsVisible.sort((a, b) => {
+        return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+      });
+      seconds = optionsVisible.filter((item) => {
+        return item.label.toLowerCase().indexOf(search.toLowerCase()) === 0;
+      });
+      firsts = seconds.filter((item) => {
+        return item.label.indexOf(search) === 0;
+      });
+      seconds = seconds.filter((item) => {
+        return item.label.indexOf(search) !== 0;
+      });
+      optionsVisible = optionsVisible.filter((item) => {
+        return item.label.toLowerCase().indexOf(search.toLowerCase()) !== 0;
+      });
+      optionsVisible = [...firsts, ...seconds, ...optionsVisible];
+    }
+    this.setState(
+      {
+        optionsVisible,
+      },
+      () => {
+        this.findAssumption();
+      }
+    );
+  }
+
+  findAssumption() {
+    let { optionsVisible, search } = this.state,
+      assume = optionsVisible.find((item) => {
+        return item.label.indexOf(search) === 0;
+      }),
+      assumeLower = optionsVisible.find((item) => {
+        return item.label.toLowerCase().indexOf(search.toLowerCase()) === 0;
+      });
+    if (!assume && !assumeLower) return;
+    this.setState({
+      assume: search ? (assume ? assume : assumeLower) : false,
     });
   }
 
   render() {
-    let { search, value, focused, multiple, disabled, options } = this.state;
+    let {
+      search,
+      value,
+      multiple,
+      disabled,
+      options,
+      optionsVisible,
+      noInput,
+      assume,
+      opened,
+      placeholder,
+      arrow,
+      listMaxHeight,
+      notFoundText,
+    } = this.state;
     return (
       <div
         className={[
           'searchable',
-          focused ? 'searchable--active' : '',
+          opened ? 'searchable--active' : '',
           disabled ? 'searchable--disabled' : '',
           multiple ? 'searchable--multiple' : '',
         ].join(' ')}
         ref={(node) => (this.container = node)}
       >
-        <div className="searchable__controls">
+        <div
+          className="searchable__controls"
+          onClick={(e) => {
+            let action = !noInput
+              ? this.onFocus
+              : opened
+              ? this.onBlur
+              : this.onFocus;
+            action();
+          }}
+        >
           <div className="searchable__controls__list-input">
             {multiple ? (
               <div className="searchable__controls__list">
-                {value.map((value) => {
+                {value.map((value, index) => {
                   return (
-                    <div className="searchable__controls__list__item">
+                    <div
+                      className="searchable__controls__list__item"
+                      key={index}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
                       {
                         options.find((option) => {
                           return option.value === value;
@@ -162,9 +373,118 @@ class Searchable extends Component {
                 })}
               </div>
             ) : null}
+            {multiple && noInput && !value.length && (
+              <div className="searchable__controls__placeholder">
+                {placeholder}
+              </div>
+            )}
+            <div
+              className={[
+                'searchable__controls__input',
+                multiple && noInput
+                  ? 'searchable__controls__input--hidden'
+                  : '',
+              ].join(' ')}
+            >
+              <input
+                type="text"
+                value={search}
+                placeholder={!assume ? placeholder : ''}
+                onChange={(e) => {
+                  this.onChange(e);
+                }}
+                onKeyDown={this.keyDown}
+                ref={(node) => (this.input = node)}
+                readOnly={noInput}
+                disabled={disabled}
+              />
+
+              {assume && (
+                <span className="searchable__controls__input__assume">
+                  {assume.label.split('').map((char, index) => {
+                    return (
+                      <span
+                        key={char + index}
+                        className={[
+                          'searchable__controls__input__assume__char',
+                          char === char.toUpperCase()
+                            ? 'searchable__controls__input__assume__char--upper'
+                            : 'searchable__controls__input__assume__char--lower',
+                          index <= search.length - 1
+                            ? 'searchable__controls__input__assume__char--hidden'
+                            : '',
+                        ].join(' ')}
+                      >
+                        {index <= search.length - 1 ? search[index] : char}
+                      </span>
+                    );
+                  })}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="searchable__controls__arrow">{icons['arrow']}</div>
+          <div
+            className="searchable__controls__arrow"
+            onClick={(e) => {
+              e.stopPropagation();
+              let action = optionsVisible.length ? this.onBlur : this.onFocus;
+              action();
+            }}
+          >
+            <button className="searchable__controls__arrow__inner">
+              {icons['arrow']}
+            </button>
+          </div>
         </div>
+        {optionsVisible.length && opened ? (
+          <div
+            className="searchable__list"
+            ref={(node) => (this.list = node)}
+            style={{
+              maxHeight: listMaxHeight,
+            }}
+          >
+            {optionsVisible.map((option, index) => {
+              let isArrow = arrow.position >= 0 && index === arrow.position,
+                isActive = !multiple
+                  ? value === option.value
+                  : value.indexOf(option.value) >= 0;
+              return (
+                <div
+                  key={index}
+                  className={[
+                    'searchable__list__item',
+                    'searchable__list__item--' + index,
+                    isActive ? 'searchable__list__item--active' : '',
+                    isArrow ? 'searchable__list__item--arrow-position' : '',
+                  ].join(' ')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    this.select(option);
+                  }}
+                >
+                  {isArrow && (
+                    <i className="searchable__list__item__arrow">
+                      <svg viewBox="0 0 240.823 240.823">
+                        <path
+                          d="M183.189,111.816L74.892,3.555c-4.752-4.74-12.451-4.74-17.215,0c-4.752,4.74-4.752,12.439,0,17.179
+		l99.707,99.671l-99.695,99.671c-4.752,4.74-4.752,12.439,0,17.191c4.752,4.74,12.463,4.74,17.215,0l108.297-108.261
+		C187.881,124.315,187.881,116.495,183.189,111.816z"
+                        />
+                      </svg>
+                    </i>
+                  )}
+                  {option.label}
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+        {!optionsVisible.length && opened ? (
+          <div className="searchable__list searchable__list--empty">
+            {notFoundText}
+          </div>
+        ) : null}
       </div>
     );
   }

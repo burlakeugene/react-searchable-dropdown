@@ -11,6 +11,35 @@ class App extends Component {
       <div className="wrap">
         <div className="wrap-col">
           <Searchable
+            multiple
+            noInput
+            options={[
+              { value: '', label: 'All' },
+              { value: 'popular', label: 'Popular' },
+              { value: 'favorites', label: 'Favorites' },
+            ]}
+            onSelect={(option) => {
+              console.log(option);
+            }}
+          />
+        </div>
+        <div className="wrap-col">
+          <Searchable
+            value={['', 'popular']}
+            multiple
+            noInput
+            options={[
+              { value: '', label: 'All' },
+              { value: 'popular', label: 'Popular' },
+              { value: 'favorites', label: 'Favorites' },
+            ]}
+            onSelect={(option) => {
+              console.log(option);
+            }}
+          />
+        </div>
+        <div className="wrap-col">
+          <Searchable
             value={['', 'popular']}
             multiple
             options={[
@@ -25,7 +54,35 @@ class App extends Component {
         </div>
         <div className="wrap-col">
           <Searchable
+            noInput
+            placeholder={'Choose'}
+            options={[
+              { value: '', label: 'All' },
+              { value: 'popular', label: 'Popular' },
+              { value: 'favorites', label: 'Favorites' },
+            ]}
+            onSelect={(option) => {
+              console.log(option);
+            }}
+          />
+        </div>
+        <div className="wrap-col">
+          <Searchable
             value={''}
+            options={[
+              { value: '', label: 'All' },
+              { value: 'popular', label: 'Popular' },
+              { value: 'favorites', label: 'Favorites' },
+            ]}
+            onSelect={(option) => {
+              console.log(option);
+            }}
+          />
+        </div>
+        <div className="wrap-col">
+          <Searchable
+            value={''}
+            disabled
             options={[
               { value: '', label: 'All' },
               { value: 'popular', label: 'Popular' },
