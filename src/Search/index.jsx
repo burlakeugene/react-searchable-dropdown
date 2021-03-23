@@ -56,6 +56,7 @@ class Searchable extends Component {
       placeholder: props.placeholder || 'Search',
       notFoundText: props.notFoundText || 'No result found',
       noInput: props.noInput || false,
+      hideSelected: props.hideSelected || false,
       opened: false,
       arrow: {
         position: -1,
@@ -97,6 +98,7 @@ class Searchable extends Component {
       placeholder: props.placeholder || state.placeholder,
       notFoundText: props.notFoundText || state.notFoundText,
       disabled: props.disabled || false,
+      hideSelected: props.hideSelected || false,
     };
   }
 
@@ -140,13 +142,12 @@ class Searchable extends Component {
   }
 
   onFocus() {
-    let { optionsVisible, options, disabled, multiple, value } = this.state;
+    let { disabled } = this.state;
     if (disabled) return;
     this.input && this.input.focus();
-    let nextOptions = optionsVisible.length ? optionsVisible : options;
     this.setState({
       opened: true,
-      optionsVisible: nextOptions,
+      optionsVisible: this.getOptionsVisible(),
     });
   }
 
@@ -176,14 +177,23 @@ class Searchable extends Component {
   }
 
   keyDown(e) {
-    let { assume = '', arrow, search, optionsVisible } = this.state;
-
-    if ((e.keyCode == 9 || e.keyCode == 13) && assume) {
+    let { assume = '', arrow, search, optionsVisible, opened } = this.state;
+    if (opened && (e.keyCode == 9 || e.keyCode == 13) && assume) {
       e.preventDefault();
       this.select(assume);
     }
 
-    if (e.keyCode == 40) {
+    if ((!opened && e.keyCode == 13) || e.keyCode == 40 || e.keyCode == 38) {
+      e.preventDefault();
+      this.onFocus();
+    }
+
+    if (e.keyCode == 27 || (e.keyCode == 13 && !assume && opened)) {
+      e.preventDefault();
+      this.onBlur();
+    }
+
+    if (e.keyCode == 40 && optionsVisible.length) {
       e.preventDefault();
       if (arrow.position < optionsVisible.length - 1) {
         arrow.position++;
@@ -202,7 +212,7 @@ class Searchable extends Component {
       );
     }
 
-    if (e.keyCode == 38) {
+    if (e.keyCode == 38 && optionsVisible.length) {
       e.preventDefault();
       if (arrow.position <= 0) {
         arrow.position = optionsVisible.length - 1;
@@ -223,7 +233,7 @@ class Searchable extends Component {
   }
 
   onChange(event) {
-    let { arrow, options, opened } = this.state,
+    let { arrow, optionsVisible, opened } = this.state,
       { target } = event,
       { value } = target;
     arrow.position = -1;
@@ -234,7 +244,7 @@ class Searchable extends Component {
         opened: true,
       },
       () => {
-        let match = options.find((option) => {
+        let match = optionsVisible.find((option) => {
           return option.label.toLowerCase() === value.toLowerCase();
         });
         if (match) {
@@ -256,19 +266,35 @@ class Searchable extends Component {
     }
   }
 
+  getOptionsVisible() {
+    let { hideSelected, multiple, value, options, optionsVisible, search } = this.state,
+      result = options.filter((option) => {
+        return option.label.toLowerCase().indexOf(search.toLowerCase()) >= 0;
+      });
+    if (hideSelected) {
+      if (!multiple) {
+        result = result.filter((option) => {
+          return option.value !== value;
+        });
+      } else {
+        result = result.filter((option) => {
+          return value.indexOf(option.value) < 0;
+        });
+      }
+    }
+    return result;
+  }
+
   sort() {
-    let { search, options } = this.state,
+    let { search } = this.state,
       firsts = [],
       seconds = [],
-      optionsVisible = [];
-    optionsVisible = options.filter((item) => {
-      return item.label.toLowerCase().indexOf(search.toLowerCase()) >= 0;
-    });
+      options = this.getOptionsVisible();
     if (search) {
-      optionsVisible = optionsVisible.sort((a, b) => {
+      options = options.sort((a, b) => {
         return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
       });
-      seconds = optionsVisible.filter((item) => {
+      seconds = options.filter((item) => {
         return item.label.toLowerCase().indexOf(search.toLowerCase()) === 0;
       });
       firsts = seconds.filter((item) => {
@@ -277,14 +303,14 @@ class Searchable extends Component {
       seconds = seconds.filter((item) => {
         return item.label.indexOf(search) !== 0;
       });
-      optionsVisible = optionsVisible.filter((item) => {
+      options = options.filter((item) => {
         return item.label.toLowerCase().indexOf(search.toLowerCase()) !== 0;
       });
-      optionsVisible = [...firsts, ...seconds, ...optionsVisible];
+      options = [...firsts, ...seconds, ...options];
     }
     this.setState(
       {
-        optionsVisible,
+        optionsVisible: options,
       },
       () => {
         this.findAssumption();
@@ -294,15 +320,16 @@ class Searchable extends Component {
 
   findAssumption() {
     let { optionsVisible, search } = this.state,
+      result = false,
       assume = optionsVisible.find((item) => {
         return item.label.indexOf(search) === 0;
       }),
       assumeLower = optionsVisible.find((item) => {
         return item.label.toLowerCase().indexOf(search.toLowerCase()) === 0;
       });
-    if (!assume && !assumeLower) return;
+    if (search && (assume || assumeLower)) result = assume || assumeLower;
     this.setState({
-      assume: search ? (assume ? assume : assumeLower) : false,
+      assume: result,
     });
   }
 
@@ -427,7 +454,7 @@ class Searchable extends Component {
             className="searchable__controls__arrow"
             onClick={(e) => {
               e.stopPropagation();
-              let action = optionsVisible.length ? this.onBlur : this.onFocus;
+              let action = opened ? this.onBlur : this.onFocus;
               action();
             }}
           >

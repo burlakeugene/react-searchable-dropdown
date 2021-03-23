@@ -27,6 +27,7 @@ import Searchable from 'react-searchable-dropdown';
 <Searchable
     value={['popular']}
     multiple
+    hideSelected
     options={[{
         value: '',
         label: 'All'

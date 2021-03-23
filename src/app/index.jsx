@@ -42,6 +42,7 @@ class App extends Component {
           <Searchable
             value={['', 'popular']}
             multiple
+            hideSelected
             options={[
               { value: '', label: 'All' },
               { value: 'popular', label: 'Popular' },
