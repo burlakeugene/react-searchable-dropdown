@@ -147,7 +147,9 @@ class Searchable extends Component {
     this.input && this.input.focus();
     this.setState({
       opened: true,
-      optionsVisible: this.getOptionsVisible(),
+      optionsVisible: this.getOptionsVisible({
+        ignoreSearch: true,
+      }),
     });
   }
 
@@ -266,10 +268,19 @@ class Searchable extends Component {
     }
   }
 
-  getOptionsVisible() {
-    let { hideSelected, multiple, value, options, optionsVisible, search } = this.state,
+  getOptionsVisible({ ignoreSearch = false } = {}) {
+    let {
+        hideSelected,
+        multiple,
+        value,
+        options,
+        optionsVisible,
+        search,
+      } = this.state,
       result = options.filter((option) => {
-        return option.label.toLowerCase().indexOf(search.toLowerCase()) >= 0;
+        return ignoreSearch
+          ? option
+          : option.label.toLowerCase().indexOf(search.toLowerCase()) >= 0;
       });
     if (hideSelected) {
       if (!multiple) {
