@@ -16,7 +16,7 @@ import Searchable from 'react-searchable-dropdown';
         label: 'All'
     }, {
         value: 'popular',
-        label: 'Popular
+        label: 'Popular'
     }]}
     onSelect={value => {
         console.log(value);
@@ -33,7 +33,7 @@ import Searchable from 'react-searchable-dropdown';
         label: 'All'
     }, {
         value: 'popular',
-        label: 'Popular
+        label: 'Popular'
     }]}
     onSelect={value => {
         console.log(value);
